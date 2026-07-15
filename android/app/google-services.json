@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "54724475146",
+    "project_id": "fir-todo-282bc",
+    "storage_bucket": "fir-todo-282bc.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:54724475146:android:b33fafff3e56ee5d6de2f3",
+        "android_client_info": {
+          "package_name": "com.example.todo_list"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "54724475146-9n7bvm8n6pmjp3hhgmrpiq78hfqbv97o.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDRaCKkX0mAPcqPe4BqVON0oW30eJGEZlg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "54724475146-9n7bvm8n6pmjp3hhgmrpiq78hfqbv97o.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "54724475146-uvcdhcflmtpaheh78rc3822cbjovc44n.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.todoList"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
