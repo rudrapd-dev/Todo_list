@@ -1,203 +1,216 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:todo_list/controller/auth_controller.dart';
 
-import '../controller/auth_controller.dart';
 
 class LoginScreen extends StatelessWidget {
   LoginScreen({super.key});
 
-  final AuthController authController =
-      Get.find<AuthController>();
-
-  final TextEditingController emailController =
-      TextEditingController();
-
-  final TextEditingController passwordController =
-      TextEditingController();
-
-  final RxBool obscurePassword = true.obs;
+  final AuthController controller = Get.find<AuthController>();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: 24,
-          ),
-          child: Center(
-            child: SingleChildScrollView(
-              child: Column(
-                children: [
-                  const Icon(
-                    Icons.check_circle_outline,
-                    color: Colors.blue,
-                    size: 90,
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: 25,
+              vertical: 20,
+            ),
+            child: Column(
+              children: [
+                const SizedBox(height: 40),
+
+                const Text(
+                  "Welcome to",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 32,
+                    fontWeight: FontWeight.bold,
                   ),
+                ),
 
-                  const SizedBox(height: 20),
+                const SizedBox(height: 10),
 
-                  const Text(
-                    "Todo App",
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 34,
-                      fontWeight: FontWeight.bold,
+                const Text(
+                  "Microsoft To Do",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 32,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+
+                const SizedBox(height: 30),
+
+                Image.asset(
+                  "assets/png/todo.png",
+                  height: 220,
+                  fit: BoxFit.contain,
+                ),
+
+                const SizedBox(height: 30),
+
+                TextField(
+                  controller: controller.emailController,
+                  style: const TextStyle(
+                    color: Colors.white,
+                  ),
+                  decoration: InputDecoration(
+                    hintText: "Email or phone number",
+                    hintStyle: const TextStyle(
+                      color: Colors.grey,
+                    ),
+                    filled: true,
+                    fillColor: Colors.black,
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 18,
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(20),
+                      borderSide: BorderSide(
+                        color: Colors.grey.shade800,
+                      ),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(20),
+                      borderSide: const BorderSide(
+                        color: Colors.blue,
+                      ),
                     ),
                   ),
+                ),
 
-                  const SizedBox(height: 10),
+                const SizedBox(height: 20),
 
-                  const Text(
-                    "Organize your day efficiently",
+                TextField(
+                  controller: controller.passwordController,
+                  obscureText: true,
+                  style: const TextStyle(
+                    color: Colors.white,
+                  ),
+                  decoration: InputDecoration(
+                    hintText: "Password",
+                    hintStyle: const TextStyle(
+                      color: Colors.grey,
+                    ),
+                    filled: true,
+                    fillColor: Colors.black,
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 18,
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(20),
+                      borderSide: BorderSide(
+                        color: Colors.grey.shade800,
+                      ),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(20),
+                      borderSide: const BorderSide(
+                        color: Colors.blue,
+                      ),
+                    ),
+                  ),
+                ),
+
+                const SizedBox(height: 25),
+
+                const Text(
+                  "Sign in with a work, school, or Microsoft account.",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: Colors.grey,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+
+                const SizedBox(height: 35),
+
+                Obx(
+                  () => SizedBox(
+                    width: double.infinity,
+                    height: 60,
+                    child: ElevatedButton(
+                      onPressed: controller.isLoading.value
+                          ? null
+                          : () {
+                              controller.login(
+                                email:
+                                    controller.emailController.text,
+                                password:
+                                    controller.passwordController.text,
+                              );
+                            },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor:
+                            const Color(0xffF2EEF8),
+                        shape: RoundedRectangleBorder(
+                          borderRadius:
+                              BorderRadius.circular(30),
+                        ),
+                      ),
+                      child: controller.isLoading.value
+                          ? const CircularProgressIndicator()
+                          : const Text(
+                              "Login",
+                              style: TextStyle(
+                                color: Color(0xff6554C0),
+                                fontSize: 20,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                    ),
+                  ),
+                ),
+
+                const SizedBox(height: 30),
+
+                TextButton(
+                  onPressed: () {
+                    if (controller
+                        .emailController.text.isNotEmpty) {
+                      controller.resetPassword(
+                        controller.emailController.text,
+                      );
+                    } else {
+                      Get.snackbar(
+                        "Error",
+                        "Enter your email first",
+                      );
+                    }
+                  },
+                  child: const Text(
+                    "Forgot Password?",
                     style: TextStyle(
-                      color: Colors.white70,
+                      color: Colors.blue,
                       fontSize: 16,
                     ),
                   ),
+                ),
 
-                  const SizedBox(height: 40),
+                const SizedBox(height: 80),
 
-                  TextField(
-                    controller: emailController,
-                    keyboardType:
-                        TextInputType.emailAddress,
-                    style: const TextStyle(
-                      color: Colors.white,
-                    ),
-                    decoration: InputDecoration(
-                      hintText: "Email",
-                      hintStyle: const TextStyle(
-                        color: Colors.white54,
-                      ),
-                      prefixIcon: const Icon(
-                        Icons.email_outlined,
-                        color: Colors.white54,
-                      ),
-                      filled: true,
-                      fillColor: Colors.grey.shade900,
-                      border: OutlineInputBorder(
-                        borderRadius:
-                            BorderRadius.circular(15),
-                        borderSide: BorderSide.none,
-                      ),
+                GestureDetector(
+                  onTap: () {
+                    Get.toNamed('/register');
+                  },
+                  child: const Text(
+                    "Don't have a Microsoft account?",
+                    style: TextStyle(
+                      color: Colors.blue,
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
-
-                  const SizedBox(height: 15),
-
-                  Obx(
-                    () => TextField(
-                      controller: passwordController,
-                      obscureText:
-                          obscurePassword.value,
-                      style: const TextStyle(
-                        color: Colors.white,
-                      ),
-                      decoration: InputDecoration(
-                        hintText: "Password",
-                        hintStyle: const TextStyle(
-                          color: Colors.white54,
-                        ),
-                        prefixIcon: const Icon(
-                          Icons.lock_outline,
-                          color: Colors.white54,
-                        ),
-                        suffixIcon: IconButton(
-                          onPressed: () {
-                            obscurePassword.value =
-                                !obscurePassword.value;
-                          },
-                          icon: Icon(
-                            obscurePassword.value
-                                ? Icons.visibility
-                                : Icons.visibility_off,
-                            color: Colors.white54,
-                          ),
-                        ),
-                        filled: true,
-                        fillColor: Colors.grey.shade900,
-                        border: OutlineInputBorder(
-                          borderRadius:
-                              BorderRadius.circular(15),
-                          borderSide: BorderSide.none,
-                        ),
-                      ),
-                    ),
-                  ),
-
-                  const SizedBox(height: 25),
-
-                  SizedBox(
-                    width: double.infinity,
-                    height: 55,
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.blue,
-                        shape: RoundedRectangleBorder(
-                          borderRadius:
-                              BorderRadius.circular(15),
-                        ),
-                      ),
-                      onPressed: () async {
-                        final email =
-                            emailController.text.trim();
-
-                        final password =
-                            passwordController.text.trim();
-
-                        if (email.isEmpty ||
-                            password.isEmpty) {
-                          Get.snackbar(
-                            "Error",
-                            "Please fill all fields",
-                            snackPosition:
-                                SnackPosition.BOTTOM,
-                          );
-                          return;
-                        }
-
-                        await authController.login(
-                           email: email, password: password,
-                        );
-                      },
-                      child: const Text(
-                        "Login",
-                        style: TextStyle(
-                          fontSize: 18,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
-                  ),
-
-                  const SizedBox(height: 20),
-
-                  Row(
-                    mainAxisAlignment:
-                        MainAxisAlignment.center,
-                    children: [
-                      const Text(
-                        "Don't have an account?",
-                        style: TextStyle(
-                          color: Colors.white70,
-                        ),
-                      ),
-                      TextButton(
-                        onPressed: () {
-                          // Get.to(
-                          //   () => SignupScreen(),
-                          // );
-                        },
-                        child: const Text(
-                          "Sign Up",
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         ),

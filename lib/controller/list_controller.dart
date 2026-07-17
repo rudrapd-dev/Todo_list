@@ -9,7 +9,7 @@ class ListController extends GetxController {
   String get uid =>
       FirebaseAuth.instance.currentUser!.uid;
 
-  /// Create List
+  /// CREATE LIST
   Future<void> addList(String name) async {
     try {
       await firestore.collection('lists').add({
@@ -30,7 +30,7 @@ class ListController extends GetxController {
     }
   }
 
-  /// Get User Lists
+  /// GET ALL USER LISTS
   Stream<QuerySnapshot> getLists() {
     return firestore
         .collection('lists')
@@ -39,52 +39,45 @@ class ListController extends GetxController {
         .snapshots();
   }
 
-  /// Delete List
+  /// DELETE LIST
+  /// Moves all tasks of that list to Recently Deleted
   Future<void> deleteList(String listId) async {
-  try {
-    final listDoc = await firestore
-        .collection('lists')
-        .doc(listId)
-        .get();
-
-    final category = listDoc['name'];
-
-    final tasks = await firestore
-        .collection('tasks')
-        .where('category', isEqualTo: category)
-        .where('userUid', isEqualTo: uid)
-        .get();
-
-    for (final task in tasks.docs) {
-      await task.reference.delete();
-    }
-
-    await firestore
-        .collection('lists')
-        .doc(listId)
-        .delete();
-
-  } catch (e) {
-    print(e);
-  }
-}
-
-  /// Rename List
-  Future<void> renameList({
-    required String listId,
-    required String newName,
-  }) async {
     try {
+      final listDoc = await firestore
+          .collection('lists')
+          .doc(listId)
+          .get();
+
+      if (!listDoc.exists) {
+        return;
+      }
+
+      final category = listDoc['name'];
+
+      /// Find tasks belonging to this list
+      final tasks = await firestore
+          .collection('tasks')
+          .where('category', isEqualTo: category)
+          .where('userUid', isEqualTo: uid)
+          .get();
+
+      /// Move tasks to Recently Deleted
+      for (final task in tasks.docs) {
+        await task.reference.update({
+          'isDeleted': true,
+          'deletedAt': Timestamp.now(),
+        });
+      }
+
+      /// Delete the list document
       await firestore
           .collection('lists')
           .doc(listId)
-          .update({
-        'name': newName,
-      });
+          .delete();
 
       Get.snackbar(
-        "Success",
-        "List renamed",
+        "Deleted",
+        "$category deleted successfully",
       );
     } catch (e) {
       Get.snackbar(
@@ -92,5 +85,64 @@ class ListController extends GetxController {
         e.toString(),
       );
     }
+  }
+
+  /// RENAME LIST
+  Future<void> renameList({
+    required String listId,
+    required String newName,
+  }) async {
+    try {
+      final listDoc = await firestore
+          .collection('lists')
+          .doc(listId)
+          .get();
+
+      if (!listDoc.exists) return;
+
+      final oldName = listDoc['name'];
+
+      /// Update list name
+      await firestore
+          .collection('lists')
+          .doc(listId)
+          .update({
+        'name': newName,
+      });
+
+      /// Update category of existing tasks
+      final tasks = await firestore
+          .collection('tasks')
+          .where('category', isEqualTo: oldName)
+          .where('userUid', isEqualTo: uid)
+          .get();
+
+      for (final task in tasks.docs) {
+        await task.reference.update({
+          'category': newName,
+        });
+      }
+
+      Get.snackbar(
+        "Success",
+        "List renamed successfully",
+      );
+    } catch (e) {
+      Get.snackbar(
+        "Error",
+        e.toString(),
+      );
+    }
+  }
+
+  /// CHECK IF LIST EXISTS
+  Future<bool> listExists(String name) async {
+    final result = await firestore
+        .collection('lists')
+        .where('userUid', isEqualTo: uid)
+        .where('name', isEqualTo: name)
+        .get();
+
+    return result.docs.isNotEmpty;
   }
 }

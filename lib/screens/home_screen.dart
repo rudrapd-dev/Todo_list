@@ -76,16 +76,16 @@ class HomeScreen extends StatelessWidget {
         Get.to(() => PlannedScreen());
         break;
 
-      // case "Assigned to me":
-      //   Get.to(() => AssignedScreen());
-      //   break;
+      case "Assigned to me":
+        Get.to(() => AssignedScreen());
+        break;
 
-      // case "Flagged email":
-      //   Get.to(() => FlaggedScreen());
-      //   break;
+      case "Flagged email":
+        Get.to(() => FlaggedScreen());
+        break;
       case"Recently Deleted":
         Get.to((RecentlyDeletedScreen()));
-        
+        break;
 
       case "Tasks":
         Get.to(
@@ -141,6 +141,7 @@ class HomeScreen extends StatelessWidget {
 
           listNameController.clear();
 
+          Get.back();
           Get.back();
         }
       },

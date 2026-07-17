@@ -61,13 +61,13 @@ class CategoryScreen extends StatelessWidget {
 
                   IconButton(
                     onPressed: () {
-                      // Get.bottomSheet(
-                      //   ListOptionsSheet(
-                      //     category: category,
-                      //   ),
-                      //   isScrollControlled: true,
-                      //   backgroundColor: Colors.transparent,
-                      // );
+                      Get.bottomSheet(
+                        ListOptionsSheet(
+                          category: category,
+                        ),
+                        isScrollControlled: true,
+                        backgroundColor: Colors.transparent,
+                      );
                     },
                     icon: const Icon(
                       Icons.more_horiz,

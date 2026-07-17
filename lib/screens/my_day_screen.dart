@@ -2,9 +2,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-
 import 'package:todo_list/controller/task_controller.dart';
 import 'package:todo_list/screens_common/add_task_screen.dart';
+import 'package:todo_list/screens_common/list_options_sheet.dart';
 import 'package:todo_list/widgest/task_tile.dart';
 
 class MyDayScreen extends StatelessWidget {
@@ -34,7 +34,7 @@ class MyDayScreen extends StatelessWidget {
         children: [
           Positioned.fill(
             child: Image.asset(
-              "assets/image.png",
+              "assets/png/image.png",
               fit: BoxFit.cover,
             ),
           ),
@@ -78,13 +78,21 @@ class MyDayScreen extends StatelessWidget {
                         ),
                       ),
 
-                      // IconButton(
-                      //   onPressed: () => showListOptions("My Day"),
-                      //   icon: const Icon(
-                      //     Icons.more_horiz,
-                      //     color: Colors.white,
-                      //   ),
-                      // ),
+                      IconButton(
+  onPressed: () {
+    Get.bottomSheet(
+      const ListOptionsSheet(
+        category: "My Day",
+      ),
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+    );
+  },
+  icon: const Icon(
+    Icons.more_horiz,
+    color: Colors.white,
+  ),
+),
                     ],
                   ),
                 ),

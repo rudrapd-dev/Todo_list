@@ -1,147 +1,200 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
+import 'package:uuid/uuid.dart';
 
 class TaskController extends GetxController {
   final FirebaseFirestore firestore =
       FirebaseFirestore.instance;
 
-  String get uid =>
-      FirebaseAuth.instance.currentUser!.uid;
+  final FirebaseAuth auth =
+      FirebaseAuth.instance;
 
-  /// ADD TASK
+  final Uuid uuid = Uuid();
+
+  String get uid => auth.currentUser!.uid;
+
+  /// ================= ADD TASK =================
   Future<void> addTask({
-    required String title,
-    required String description,
-    required String category,
-  }) async {
-    await firestore
-        .collection('users')
-        .doc(uid)
-        .collection('tasks')
-        .add({
-      'title': title,
-      'description': description,
-      'category': category,
-      'completed': false,
-      'createdAt': Timestamp.now(),
-    });
-  }
+  required String title,
+  required String description,
+  required String category,
+  required DateTime dueDate,
+}) async {
+  final id = uuid.v1();
 
-  /// SOFT DELETE TASK
-  Future<void> deleteTask(String taskId) async {
-    final doc = await firestore
-        .collection('users')
-        .doc(uid)
-        .collection('tasks')
-        .doc(taskId)
-        .get();
+  await firestore.collection('tasks').doc(id).set({
+    'uid': id,
+    'title': title,
+    'description': description,
+    'category': category,
+    'completed': false,
+    'isDeleted': false,
+    'createdAt': Timestamp.now(),
+    'deletedAt': null,
+    'userUid': uid,
+    'dueDate': Timestamp.fromDate(dueDate),
+  });
+}
 
-    if (doc.exists) {
-      await firestore
-          .collection('users')
-          .doc(uid)
-          .collection('deleted_tasks')
-          .doc(taskId)
-          .set({
-        ...doc.data()!,
-        'deletedAt': Timestamp.now(),
-      });
-
-      await firestore
-          .collection('users')
-          .doc(uid)
-          .collection('tasks')
-          .doc(taskId)
-          .delete();
-    }
-  }
-
-  /// RESTORE TASK
-  Future<void> restoreTask(
-      String taskId) async {
-    final doc = await firestore
-        .collection('users')
-        .doc(uid)
-        .collection('deleted_tasks')
-        .doc(taskId)
-        .get();
-
-    if (doc.exists) {
-      Map<String, dynamic> data =
-          doc.data()!;
-
-      data.remove('deletedAt');
-
-      await firestore
-          .collection('users')
-          .doc(uid)
-          .collection('tasks')
-          .doc(taskId)
-          .set(data);
-
-      await firestore
-          .collection('users')
-          .doc(uid)
-          .collection('deleted_tasks')
-          .doc(taskId)
-          .delete();
-    }
-  }
-
-  /// PERMANENT DELETE
-  Future<void> permanentlyDeleteTask(
-      String taskId) async {
-    await firestore
-        .collection('users')
-        .doc(uid)
-        .collection('deleted_tasks')
-        .doc(taskId)
-        .delete();
-  }
-
-  /// DELETED TASKS STREAM
-  Stream<QuerySnapshot> getDeletedTasks() {
-    return firestore
-        .collection('users')
-        .doc(uid)
-        .collection('deleted_tasks')
-        .orderBy(
-          'deletedAt',
-          descending: true,
-        )
-        .snapshots();
-  }
-
-  /// TOGGLE COMPLETED
-  Future<void> toggleTask(
-    String taskId,
-    bool completed,
-  ) async {
-    await firestore
-        .collection('users')
-        .doc(uid)
-        .collection('tasks')
-        .doc(taskId)
-        .update({
-      'completed': !completed,
-    });
-  }
-
-  /// GET TASKS BY CATEGORY
+  /// ================= CATEGORY TASKS =================
   Stream<QuerySnapshot> getTasks(
-      String category) {
+    String category,
+  ) {
     return firestore
-        .collection('users')
-        .doc(uid)
         .collection('tasks')
         .where(
           'category',
           isEqualTo: category,
         )
-        .orderBy(
-          'createdAt',
-          descending: true,
+        .where(
+          'userUid',
+          isEqualTo: uid,
+        )
+        .where(
+          'isDeleted',
+          isEqualTo: false,
+        )
+        .snapshots();
+  }
+
+  /// ================= PLANNED TASKS =================
+  Stream<QuerySnapshot> getPlannedTasks() {
+    return firestore
+        .collection('tasks')
+        .where(
+          'category',
+          isEqualTo: 'Planned',
+        )
+        .where(
+          'userUid',
+          isEqualTo: uid,
+        )
+        .where(
+          'isDeleted',
+          isEqualTo: false,
+        )
+        .orderBy('dueDate')
+        .snapshots();
+  }
+
+  /// ================= TASKS FOR A SPECIFIC DATE =================
+  Stream<QuerySnapshot> getTasksByDate(
+    DateTime day,
+  ) {
+    final start = DateTime(
+      day.year,
+      day.month,
+      day.day,
+    );
+
+    final end = start.add(
+      const Duration(days: 1),
+    );
+
+    return firestore
+        .collection('tasks')
+        .where(
+          'category',
+          isEqualTo: 'Planned',
+        )
+        .where(
+          'userUid',
+          isEqualTo: uid,
+        )
+        .where(
+          'isDeleted',
+          isEqualTo: false,
+        )
+        .where(
+          'dueDate',
+          isGreaterThanOrEqualTo:
+              Timestamp.fromDate(start),
+        )
+        .where(
+          'dueDate',
+          isLessThan:
+              Timestamp.fromDate(end),
+        )
+        .snapshots();
+  }
+
+  /// ================= TOGGLE COMPLETE =================
+  Future<void> toggleTask(
+    String taskId,
+    bool completed,
+  ) async {
+    try {
+      await firestore
+          .collection('tasks')
+          .doc(taskId)
+          .update({
+        'completed': !completed,
+      });
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  /// ================= MOVE TO TRASH =================
+  Future<void> deleteTask(
+    String taskId,
+  ) async {
+    try {
+      await firestore
+          .collection('tasks')
+          .doc(taskId)
+          .update({
+        'isDeleted': true,
+        'deletedAt': Timestamp.now(),
+      });
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  /// ================= RESTORE =================
+  Future<void> restoreTask(
+    String taskId,
+  ) async {
+    try {
+      await firestore
+          .collection('tasks')
+          .doc(taskId)
+          .update({
+        'isDeleted': false,
+        'deletedAt': null,
+      });
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  /// ================= DELETE FOREVER =================
+  Future<void> permanentlyDeleteTask(
+    String taskId,
+  ) async {
+    try {
+      await firestore
+          .collection('tasks')
+          .doc(taskId)
+          .delete();
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  /// ================= TRASH =================
+  Stream<QuerySnapshot> getDeletedTasks() {
+    return firestore
+        .collection('tasks')
+        .where(
+          'userUid',
+          isEqualTo: uid,
+        )
+        .where(
+          'isDeleted',
+          isEqualTo: true,
         )
         .snapshots();
   }

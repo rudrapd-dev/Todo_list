@@ -13,7 +13,7 @@ class ImportantScreen extends StatelessWidget {
       titleColor: Colors.pink.shade100,
       emptyWidget: const Center(
         child: Text(
-          "Try starring some tasks to see them here.",
+          "Try adding some crusial and important tasks to add here.",
           style: TextStyle(
             color: Colors.white54,
           ),
