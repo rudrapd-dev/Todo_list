@@ -100,11 +100,19 @@ class HomeScreen extends StatelessWidget {
   }
 
   void showCreateListDialog() {
-    Get.defaultDialog(
+  listNameController.clear();
+
+  Get.dialog(
+    AlertDialog(
       backgroundColor: Colors.black,
-      title: "Create New List",
-      titleStyle: const TextStyle(
-        color: Colors.white,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(15),
+      ),
+      title: const Text(
+        "Create New List",
+        style: TextStyle(
+          color: Colors.white,
+        ),
       ),
       content: TextField(
         controller: listNameController,
@@ -130,24 +138,70 @@ class HomeScreen extends StatelessWidget {
           ),
         ),
       ),
-      textConfirm: "Create",
-      textCancel: "Cancel",
-      confirmTextColor: Colors.white,
-      onConfirm: () async {
-        if (listNameController.text.trim().isNotEmpty) {
-          await listController.addList(
-            listNameController.text.trim(),
-          );
+      actions: [
+        TextButton(
+          onPressed: () {
+            Get.back();
+          },
+          child: const Text(
+            "Cancel",
+            style: TextStyle(
+              color: Colors.grey,
+            ),
+          ),
+        ),
+        ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.blue,
+          ),
+          onPressed: () async {
+            final name =
+                listNameController.text.trim();
 
-          listNameController.clear();
+            if (name.isEmpty) {
+              Get.snackbar(
+                "Error",
+                "Please enter a list name",
+                snackPosition:
+                    SnackPosition.BOTTOM,
+              );
+              return;
+            }
 
-          Get.back();
-          Get.back();
-        }
-      },
-    );
-  }
+            final exists =
+                await listController.listExists(
+              name,
+            );
 
+            if (exists) {
+              Get.snackbar(
+                "Error",
+                "List already exists",
+                snackPosition:
+                    SnackPosition.BOTTOM,
+              );
+              return;
+            }
+
+            await listController.addList(name);
+
+            listNameController.clear();
+
+            Get.back();
+
+            Get.snackbar(
+              "Success",
+              "List created successfully",
+              snackPosition:
+                  SnackPosition.BOTTOM,
+            );
+          },
+          child: const Text("Create"),
+        ),
+      ],
+    ),
+  );
+}
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -348,32 +402,52 @@ class HomeScreen extends StatelessWidget {
                                 ),
 
                                 IconButton(
-                                  icon:
-                                      const Icon(
-                                    Icons.delete,
-                                    color:
-                                        Colors.red,
-                                  ),
-                                  onPressed: () {
-                                    Get.defaultDialog(
-                                      title:
-                                          "Delete List",
-                                      middleText:
-                                          "Are you sure?",
-                                      onConfirm:
-                                          () async {
-                                        await listController
-                                            .deleteList(
-                                          list.id,
-                                        );
+  icon: const Icon(
+    Icons.delete,
+    color: Colors.red,
+  ),
+  onPressed: () async {
+    final confirm = await Get.dialog<bool>(
+      AlertDialog(
+        backgroundColor: Colors.black,
+        title: const Text(
+          "Delete List",
+          style: TextStyle(
+            color: Colors.white,
+          ),
+        ),
+        content: Text(
+          "Delete ${list['name']} ?",
+          style: const TextStyle(
+            color: Colors.white70,
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () =>
+                Get.back(result: false),
+            child: const Text("Cancel"),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.red,
+            ),
+            onPressed: () =>
+                Get.back(result: true),
+            child: const Text("Delete"),
+          ),
+        ],
+      ),
+    );
 
-                                        Get.back();
-                                      },
-                                      onCancel:
-                                          () {},
-                                    );
-                                  },
-                                ),
+    if (confirm == true) {
+      await listController.deleteList(
+        list.id,
+      );
+    }
+  },
+),
+                                
                               ],
                             ),
                           );

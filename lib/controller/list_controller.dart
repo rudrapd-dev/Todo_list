@@ -11,24 +11,12 @@ class ListController extends GetxController {
 
   /// CREATE LIST
   Future<void> addList(String name) async {
-    try {
-      await firestore.collection('lists').add({
-        'name': name,
-        'userUid': uid,
-        'createdAt': Timestamp.now(),
-      });
-
-      Get.snackbar(
-        "Success",
-        "List created successfully",
-      );
-    } catch (e) {
-      Get.snackbar(
-        "Error",
-        e.toString(),
-      );
-    }
-  }
+  await firestore.collection('lists').add({
+    'name': name,
+    'userUid': uid,
+    'createdAt': Timestamp.now(),
+  });
+}
 
   /// GET ALL USER LISTS
   Stream<QuerySnapshot> getLists() {
