@@ -1,6 +1,8 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:todo_list/controller/theme_controller.dart';
+
 import 'package:todo_list/screens/splashScreen.dart';
 
 import 'controller/auth_controller.dart';
@@ -26,6 +28,7 @@ void main() async {
   // Get.put(AuthController());
   Get.put(TaskController());
   Get.put(ListController());
+  Get.put(ThemeController());
 
   runApp(const MyApp());
 }
@@ -50,8 +53,16 @@ class MyApp extends StatelessWidget {
 
         GetPage(name: '/home', page: () => HomeScreen()),
 
-        GetPage(name: '/myday', page: () => MyDayScreen()),
-        GetPage(name: '/important', page: () => const ImportantScreen()),
+        GetPage(
+          name: '/myday',
+          page: () => MyDayScreen(),
+          binding: BindingsBuilder.put(() => ThemeController()),
+        ),
+        GetPage(
+          name: '/important',
+          page: () =>  ImportantScreen(),
+          binding: BindingsBuilder.put(() => ThemeController()),
+        ),
 
         GetPage(name: '/planned', page: () => const PlannedScreen()),
 

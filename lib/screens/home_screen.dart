@@ -65,11 +65,11 @@ class HomeScreen extends StatelessWidget {
   void navigateToPage(String title) {
     switch (title) {
       case "My Day":
-        Get.to(() => MyDayScreen());
+        Get.toNamed("/myday");
         break;
 
       case "Important":
-        Get.to(() => ImportantScreen());
+        Get.toNamed("/important");
         break;
 
       case "Planned":

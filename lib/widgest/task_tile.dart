@@ -30,7 +30,7 @@ class _TaskTileState extends State<TaskTile> {
   Widget build(BuildContext context) {
     return Card(
       elevation: 3,
-      color: Colors.grey.shade900.withOpacity(0.85),
+      color: Colors.grey.shade900.withValues(alpha: 0.85),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(15),
       ),
