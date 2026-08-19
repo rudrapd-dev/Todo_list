@@ -16,6 +16,7 @@ class CategoryScreen extends StatelessWidget {
   final String category;
   final Widget? emptyWidget;
   final Widget? topWidget;
+  
 
   CategoryScreen({
     super.key,
@@ -314,7 +315,7 @@ class CategoryScreen extends StatelessWidget {
 
                                 completed:
                                     data["completed"] ??
-                                        false,
+                                        false, category: category,
                               );
                             },
                           );

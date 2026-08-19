@@ -34,7 +34,7 @@ class TaskController extends GetxController {
     'deletedAt': null,
     'userUid': uid,
     'dueDate': Timestamp.fromDate(dueDate),
-  });
+  }, SetOptions(merge: true));
 }
 
   /// ================= CATEGORY TASKS =================

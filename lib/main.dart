@@ -2,6 +2,8 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:todo_list/controller/theme_controller.dart';
+import 'package:todo_list/screens/assigned_screen.dart';
+import 'package:todo_list/screens/flagged_screen.dart';
 
 import 'package:todo_list/screens/splashScreen.dart';
 
@@ -61,6 +63,16 @@ class MyApp extends StatelessWidget {
         GetPage(
           name: '/important',
           page: () =>  ImportantScreen(),
+          binding: BindingsBuilder.put(() => ThemeController()),
+        ),
+        GetPage(
+          name: '/flagged',
+          page: () =>  FlaggedScreen(),
+          binding: BindingsBuilder.put(() => ThemeController()),
+        ),
+        GetPage(
+          name: '/assigned_to_me',
+          page: () =>  AssignedScreen(),
           binding: BindingsBuilder.put(() => ThemeController()),
         ),
 

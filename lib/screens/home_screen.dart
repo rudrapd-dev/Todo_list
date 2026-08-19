@@ -77,11 +77,11 @@ class HomeScreen extends StatelessWidget {
         break;
 
       case "Assigned to me":
-        Get.to(() => AssignedScreen());
+        Get.toNamed("/assigned_to_me");
         break;
 
       case "Flagged email":
-        Get.to(() => FlaggedScreen());
+        Get.toNamed("/flagged");
         break;
       case"Recently Deleted":
         Get.to((RecentlyDeletedScreen()));

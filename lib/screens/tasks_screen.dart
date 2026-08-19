@@ -155,7 +155,7 @@ class TasksScreen extends StatelessWidget {
                                 '',
                         completed:
                             task['completed'] ??
-                                false,
+                                false, category: '',
                       );
                     },
                   );

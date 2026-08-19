@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:todo_list/controller/theme_controller.dart';
+import 'package:todo_list/screens_common/card_colour_screen.dart';
 
 class ThemeSelectorScreen extends StatelessWidget {
   final String category;
@@ -25,6 +26,7 @@ class ThemeSelectorScreen extends StatelessWidget {
     "assets/themes/theme3.jpg",
     "assets/themes/theme4.jpg",
   ];
+  
 
   @override
   Widget build(BuildContext context) {
@@ -111,7 +113,7 @@ class ThemeSelectorScreen extends StatelessWidget {
             // ==================================================
 
             SizedBox(
-              height: 180,
+              height: 100,
 
               child: GridView.builder(
                 itemCount: defaultThemes.length,
@@ -275,7 +277,100 @@ class ThemeSelectorScreen extends StatelessWidget {
             // ==================================================
             // CUSTOM THEMES TITLE
             // ==================================================
+const SizedBox(height: 20),
 
+Align(
+  alignment: Alignment.centerLeft,
+  child: Text(
+    "Task Card Color",
+    style: const TextStyle(
+      color: Colors.white,
+      fontSize: 20,
+      fontWeight: FontWeight.bold,
+    ),
+  ),
+),
+
+const SizedBox(height: 12),
+
+GestureDetector(
+  onTap: () {
+
+    Get.to(
+      () => CardColorScreen(
+        category: category,
+      ),
+      transition: Transition.rightToLeft,
+      duration: const Duration(
+        milliseconds: 300,
+      ),
+    );
+  },
+
+  child: Container(
+    width: double.infinity,
+    padding: const EdgeInsets.all(16),
+
+    decoration: BoxDecoration(
+      color: const Color(0xFF292929),
+      borderRadius: BorderRadius.circular(16),
+    ),
+
+    child: Row(
+      children: [
+        Obx (() => 
+       Container(
+            width: 48,
+            height: 48,
+
+            decoration: BoxDecoration(
+              color: controller.getCardColor(
+                category,
+              ),
+              borderRadius:
+                  BorderRadius.circular(12),
+            ),
+          ),
+        ),
+
+        const SizedBox(width: 15),
+
+        const Expanded(
+          child: Column(
+            crossAxisAlignment:
+                CrossAxisAlignment.start,
+            children: [
+              Text(
+                "Task Card Color",
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 17,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+
+              SizedBox(height: 4),
+
+              Text(
+                "Change the color of your task cards",
+                style: TextStyle(
+                  color: Colors.white54,
+                  fontSize: 13,
+                ),
+              ),
+            ],
+          ),
+        ),
+
+        const Icon(
+          Icons.chevron_right,
+          color: Colors.white54,
+          size: 30,
+        ),
+      ],
+    ),
+  ),
+),
             const Align(
               alignment: Alignment.centerLeft,
               child: Text(

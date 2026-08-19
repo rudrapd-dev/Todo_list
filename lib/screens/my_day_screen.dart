@@ -301,19 +301,16 @@ class MyDayScreen extends StatelessWidget {
                                       as Map<String, dynamic>;
 
                               return TaskTile(
-                                taskId: task.id,
+  taskId: task.id,
 
-                                title:
-                                    data["title"] ??
-                                        "",
+  title: data["title"] ?? "",
 
-                                description:
-                                    data["description"] ??
-                                        "",
+  description: data["description"] ?? "",
 
-                                completed:
-                                    data["completed"] ??
-                                        false,
+  completed: data["completed"] ?? false,
+
+  category: "My Day",
+
                               );
                             },
                           );

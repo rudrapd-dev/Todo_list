@@ -6,7 +6,9 @@ import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+
 class ThemeController extends GetxController {
+  
   // ============================================================
   // IMAGE PICKER
   // ============================================================
@@ -43,13 +45,15 @@ class ThemeController extends GetxController {
   // ============================================================
   // INIT
   // ============================================================
-
+ final RxMap<String, int> selectedCardColors =
+    <String, int>{}.obs;
   @override
   void onInit() {
     super.onInit();
 
     loadImages();
     loadCategoryThemes();
+    loadCardColors();
   }
 
   // ============================================================
@@ -170,8 +174,8 @@ class ThemeController extends GetxController {
         "My Day",
         "Important",
         "Planned",
-        "Assigned to me",
-        "Flagged email",
+        "Assigned",
+        "Flagged",
         "Tasks",
         "Recently Deleted",
         "new",
@@ -479,4 +483,49 @@ class ThemeController extends GetxController {
       isScrollControlled: true,
     );
   }
+  Future<void> loadCardColors() async {
+  final prefs = await SharedPreferences.getInstance();
+
+  final Map<String, int> loadedColors = {};
+
+  for (final key in prefs.getKeys()) {
+    if (key.startsWith("card_color_")) {
+      final category =
+          key.replaceFirst("card_color_", "");
+
+      final colorValue = prefs.getInt(key);
+
+      if (colorValue != null) {
+        loadedColors[category] = colorValue;
+      }
+    }
+  }
+
+  selectedCardColors.assignAll(loadedColors);
+}
+Future<void> selectCardColor(
+  String category,
+  Color color,
+) async {
+  final prefs = await SharedPreferences.getInstance();
+
+  selectedCardColors[category] = color.value;
+
+  selectedCardColors.refresh();
+
+  await prefs.setInt(
+    "card_color_$category",
+    color.value,
+  );
+}Color getCardColor(String category) {
+  final colorValue =
+      selectedCardColors[category];
+
+  if (colorValue == null) {
+    return const Color(0xFF2A2A2A);
+  }
+
+  return Color(colorValue);
+}
+
 }

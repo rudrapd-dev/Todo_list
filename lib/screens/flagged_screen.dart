@@ -1,10 +1,16 @@
-import 'package:flutter/material.dart';
+import 'dart:io';
 
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+
+import '../controller/theme_controller.dart';
 import '../screens_common/category_screen.dart';
 
 class FlaggedScreen extends StatelessWidget {
-  const FlaggedScreen({super.key});
+   FlaggedScreen({super.key});
 
+  final ThemeController themeController =
+      Get.find<ThemeController>();
   @override
   Widget build(BuildContext context) {
     return CategoryScreen(
@@ -41,4 +47,5 @@ class FlaggedScreen extends StatelessWidget {
       ),
     );
   }
+
 }
