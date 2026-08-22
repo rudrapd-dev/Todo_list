@@ -6,9 +6,11 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:todo_list/controller/task_controller.dart';
 import 'package:todo_list/controller/theme_controller.dart';
+import 'package:todo_list/controller/weather_controller.dart';
 
 import 'package:todo_list/screens_common/add_task_screen.dart';
 import 'package:todo_list/screens_common/list_options_sheet.dart';
+import 'package:todo_list/services/api_service.dart';
 import 'package:todo_list/widgest/task_tile.dart';
 
 class MyDayScreen extends StatelessWidget {
@@ -19,6 +21,8 @@ class MyDayScreen extends StatelessWidget {
 
   final ThemeController themeController =
       Get.find<ThemeController>();
+      final WeatherController weatherController =
+    Get.find<WeatherController>();
 
   @override
   Widget build(BuildContext context) {
@@ -201,6 +205,32 @@ class MyDayScreen extends StatelessWidget {
                               ),
                             ),
                           ),
+                          
+
+  
+
+   Obx(() {
+  final weather = weatherController.weatherData.value;
+
+  if (weather == null) {
+    return const Text(
+      "Loading weather...",
+      style: TextStyle(
+        color: Colors.white54,
+        fontSize: 17,
+      ),
+    );
+  }
+
+  return Text(
+    "${weather['main']['temp'].toStringAsFixed(1)}°C • "
+    "${weather['weather'][0]['description']}",
+    style: const TextStyle(
+      color: Colors.white70,
+      fontSize: 17,
+    ),
+  );
+}),
                         ],
                       ),
                     ),

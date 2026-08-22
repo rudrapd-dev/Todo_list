@@ -2,6 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:todo_list/controller/theme_controller.dart';
+import 'package:todo_list/controller/weather_controller.dart';
 import 'package:todo_list/screens/assigned_screen.dart';
 import 'package:todo_list/screens/flagged_screen.dart';
 
@@ -31,6 +32,7 @@ void main() async {
   Get.put(TaskController());
   Get.put(ListController());
   Get.put(ThemeController());
+  Get.put(WeatherController());
 
   runApp(const MyApp());
 }

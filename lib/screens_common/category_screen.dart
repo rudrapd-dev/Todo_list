@@ -3,10 +3,13 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
+
 import 'package:todo_list/widgest/task_tile.dart';
 
 import '../controller/task_controller.dart';
 import '../controller/theme_controller.dart';
+import '../controller/weather_controller.dart';
 import '../screens_common/list_options_sheet.dart';
 import '../screens_common/add_task_screen.dart';
 
@@ -16,7 +19,6 @@ class CategoryScreen extends StatelessWidget {
   final String category;
   final Widget? emptyWidget;
   final Widget? topWidget;
-  
 
   CategoryScreen({
     super.key,
@@ -37,8 +39,18 @@ class CategoryScreen extends StatelessWidget {
   final ThemeController themeController =
       Get.find<ThemeController>();
 
+  final WeatherController weatherController =
+      Get.find<WeatherController>();
+
   @override
   Widget build(BuildContext context) {
+    // ==========================================================
+    // DATE
+    // ==========================================================
+
+    final String today =
+        DateFormat('EEEE, d MMMM').format(DateTime.now());
+
     return Scaffold(
       backgroundColor: Colors.black,
 
@@ -157,9 +169,7 @@ class CategoryScreen extends StatelessWidget {
                                 ListOptionsSheet(
                                   category: category,
                                 ),
-
                                 isScrollControlled: true,
-
                                 backgroundColor:
                                     Colors.transparent,
                               );
@@ -179,24 +189,119 @@ class CategoryScreen extends StatelessWidget {
                     // ==========================================
 
                     Padding(
-                      padding:
-                          const EdgeInsets.symmetric(
+                      padding: const EdgeInsets.symmetric(
                         horizontal: 20,
                       ),
 
-                      child: Align(
-                        alignment:
-                            Alignment.centerLeft,
+                      child: Column(
+                        crossAxisAlignment:
+                            CrossAxisAlignment.start,
 
-                        child: Text(
-                          title,
+                        children: [
 
-                          style: TextStyle(
-                            color: titleColor,
-                            fontSize: 38,
-                            fontWeight: FontWeight.bold,
+                          // ------------------------------------
+                          // TITLE
+                          // ------------------------------------
+
+                          Align(
+                            alignment: Alignment.centerLeft,
+
+                            child: Text(
+                              title,
+
+                              style: TextStyle(
+                                color: titleColor,
+                                fontSize: 38,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
                           ),
-                        ),
+
+                          const SizedBox(height: 4),
+
+                          // ------------------------------------
+                          // DAY + DATE + MONTH
+                          // ------------------------------------
+
+                          Align(
+                            alignment: Alignment.centerLeft,
+
+                            child: Text(
+                              today,
+
+                              style: const TextStyle(
+                                color: Colors.white70,
+                                fontSize: 20,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ),
+
+                          const SizedBox(height: 7),
+
+                          // ------------------------------------
+                          // WEATHER
+                          // ------------------------------------
+
+                          Obx(
+                            () {
+                              final weather =
+                                  weatherController
+                                      .weatherData
+                                      .value;
+
+                              if (weather == null) {
+                                return const Text(
+                                  "Loading weather...",
+                                  style: TextStyle(
+                                    color: Colors.white54,
+                                    fontSize: 16,
+                                  ),
+                                );
+                              }
+
+                              final temperature =
+                                  weather['main']['temp'];
+
+                              final description =
+                                  weather['weather'][0]
+                                      ['description'];
+
+                              return Row(
+                                children: [
+
+                                  const Icon(
+                                    Icons.cloud_outlined,
+                                    color: Colors.white70,
+                                    size: 20,
+                                  ),
+
+                                  const SizedBox(width: 7),
+
+                                  Text(
+                                    "${temperature.toStringAsFixed(1)}°C",
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 17,
+                                      fontWeight:
+                                          FontWeight.w500,
+                                    ),
+                                  ),
+
+                                  const SizedBox(width: 8),
+
+                                  Text(
+                                    "• $description",
+                                    style: const TextStyle(
+                                      color: Colors.white70,
+                                      fontSize: 16,
+                                    ),
+                                  ),
+                                ],
+                              );
+                            },
+                          ),
+                        ],
                       ),
                     ),
 
@@ -249,6 +354,7 @@ class CategoryScreen extends StatelessWidget {
                             return Center(
                               child: Text(
                                 "Something went wrong",
+
                                 style: const TextStyle(
                                   color: Colors.white70,
                                   fontSize: 18,
@@ -306,8 +412,7 @@ class CategoryScreen extends StatelessWidget {
                                 taskId: task.id,
 
                                 title:
-                                    data["title"] ??
-                                        "",
+                                    data["title"] ?? "",
 
                                 description:
                                     data["description"] ??
@@ -315,7 +420,9 @@ class CategoryScreen extends StatelessWidget {
 
                                 completed:
                                     data["completed"] ??
-                                        false, category: category,
+                                        false,
+
+                                category: category,
                               );
                             },
                           );
@@ -356,7 +463,6 @@ class CategoryScreen extends StatelessWidget {
           imageFile,
           fit: BoxFit.cover,
 
-          // Prevent image loading errors
           errorBuilder:
               (context, error, stackTrace) {
             return _defaultBackground();

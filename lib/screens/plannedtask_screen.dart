@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:table_calendar/table_calendar.dart';
+import 'package:todo_list/controller/weather_controller.dart';
 
 import '../controller/task_controller.dart';
 import '../controller/theme_controller.dart';
@@ -28,6 +29,8 @@ class _PlannedScreenState extends State<PlannedScreen> {
 
   final ThemeController themeController =
       Get.find<ThemeController>();
+      final WeatherController weatherController =
+    Get.find<WeatherController>();
 
   // ==========================================================
   // CALENDAR
@@ -216,10 +219,33 @@ class _PlannedScreenState extends State<PlannedScreen> {
                             fontWeight: FontWeight.w500,
                           ),
                         ),
+                        
                       ),
                     ),
 
                     const SizedBox(height: 12),
+                    Obx(() {
+  final weather = weatherController.weatherData.value;
+
+  if (weather == null) {
+    return const Text(
+      "Loading weather...",
+      style: TextStyle(
+        color: Colors.white54,
+        fontSize: 17,
+      ),
+    );
+  }
+
+  return Text(
+    "${weather['main']['temp'].toStringAsFixed(1)}°C • "
+    "${weather['weather'][0]['description']}",
+    style: const TextStyle(
+      color: Colors.white70,
+      fontSize: 17,
+    ),
+  );
+}),
 
                     // ============================================
                     // FIRESTORE TASKS
